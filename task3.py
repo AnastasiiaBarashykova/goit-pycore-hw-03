@@ -1,0 +1,42 @@
+import re
+
+def normalize_phone_list(phone_numbers):
+    normalized = []
+    
+    for phone in phone_numbers:
+        clean_number = re.sub(r'[^\d+]', '', phone)
+
+        match_plus = re.match(r'^\+', clean_number)
+        if match_plus:
+            normalized.append(match_plus.string)
+            continue
+
+        match_380 = re.match(r'^380', clean_number)
+        if match_380:
+            normalized.append('+' + clean_number)
+            continue
+
+        match_0 = re.match(r'^0', clean_number)
+        if match_0:
+            start, end = match_0.span()
+            normalized.append('+38' + clean_number[end:])
+            continue
+
+        normalized.append('+38' + clean_number)
+
+    return normalized
+
+phone_numbers = [
+    "067\\t123 4567",
+    "(095) 234-5678\\n",
+    "+380 44 123 4567",
+    "380501234567",
+    "    +38(050)123-32-34",
+    "     0503451234",
+    "(050)8889900",
+    "38050-111-22-22",
+    "38050 111 22 11   ",
+]
+
+sanitized_numbers = normalize_phone_list(phone_numbers)
+print("Нормалізовані номери телефонів для SMS-розсилки:", sanitized_numbers)
